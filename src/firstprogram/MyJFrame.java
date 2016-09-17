@@ -8,6 +8,8 @@ package firstprogram;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 
 public class MyJFrame extends javax.swing.JFrame {
@@ -18,6 +20,7 @@ public class MyJFrame extends javax.swing.JFrame {
     public MyJFrame() {
         initComponents();
         mGraphics=jPanelCanvas.getGraphics();
+        
     }
 
     /**
@@ -37,6 +40,7 @@ public class MyJFrame extends javax.swing.JFrame {
         jTextAreaLines = new javax.swing.JTextArea();
         btnShowPixels = new javax.swing.JButton();
         btnShowSinus = new javax.swing.JButton();
+        btnShowFunction = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,6 +93,15 @@ public class MyJFrame extends javax.swing.JFrame {
             }
         });
 
+        btnShowFunction.setFont(new java.awt.Font("mononoki", 1, 24)); // NOI18N
+        btnShowFunction.setText("Function");
+        btnShowFunction.setName(""); // NOI18N
+        btnShowFunction.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShowFunctionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,7 +116,8 @@ public class MyJFrame extends javax.swing.JFrame {
                     .addComponent(jButtonShowLength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(btnShowPixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnShowSinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnShowSinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnShowFunction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
@@ -123,7 +137,9 @@ public class MyJFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnShowPixels, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnShowSinus, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnShowSinus, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnShowFunction, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -145,6 +161,7 @@ public class MyJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonShowImageActionPerformed
 
     private void jButtonShowLengthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonShowLengthActionPerformed
+        mGraphics =this.jPanelCanvas.getGraphics(); 
         
         int lineNumber=Integer.parseInt(this.JTextFieldLinesNumber.getText());
         
@@ -187,7 +204,7 @@ public class MyJFrame extends javax.swing.JFrame {
         float result = 0;
         
         while(radians<jPanelCanvas.getWidth()){
-           radians+=0.05;
+           radians+=0.025;
            x++;
            
            result=amp*(float)Math.sin(radians);
@@ -198,6 +215,68 @@ public class MyJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnShowSinusActionPerformed
 
+    private void btnShowFunctionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowFunctionActionPerformed
+        // Window could have been resized. re-initialize graphics just in case
+        mGraphics =this.jPanelCanvas.getGraphics(); 
+        
+        int offSetY= jPanelCanvas.getHeight()/2;
+        drawFunction();
+        drawAxis();
+    }//GEN-LAST:event_btnShowFunctionActionPerformed
+    
+    private void drawFunction(){
+        Color prevColor = mGraphics.getColor();
+        mGraphics.setColor(Color.blue);
+        
+        int offSetY= jPanelCanvas.getHeight()/2;
+        int offSetX= jPanelCanvas.getWidth()/2;
+        
+        float arg = 0;
+        int x=0, y=0;
+        
+        while(arg<jPanelCanvas.getWidth()){
+            arg+=.025;
+            x++;
+            mGraphics.setColor(Color.blue);
+            y=Math.round(offSetY-f(arg)*50);
+            drawPixel(x,y);
+            
+            mGraphics.setColor(Color.red);
+            y=offSetY-Math.round(r(arg)*50);
+            drawPixel(x,y);
+        }
+        
+        mGraphics.setColor(prevColor);
+    }
+    
+    private float f(float x){
+        if(x>-2 && x<0){
+            return 2;
+        }else if(x>=0 && x<=2){
+            return 2-x;
+        }else{
+            return f(x-4);
+        }
+    }
+    
+    private float r(float x){
+        float result=3/2f;
+        
+        for(int n=1;n<7;n++){
+            result+= 4/(Math.pow(2*n-1, 2)*Math.pow(Math.PI,2))*
+                    Math.cos((2*n-1)*Math.PI*x/2)+
+                    Math.pow(-1, n)*2/(n*Math.PI)*
+                    Math.sin(n*Math.PI*x/2);
+        }
+        
+        return result;
+    }
+    
+    private void drawAxis(){
+        mGraphics.drawLine(0, jPanelCanvas.getHeight()/2, jPanelCanvas.getWidth(), jPanelCanvas.getHeight()/2);
+        mGraphics.drawLine(jPanelCanvas.getWidth()/2, 0, jPanelCanvas.getWidth()/2, jPanelCanvas.getHeight());
+    }
+    
     /** Helper methods that draws single pixels by using drawLine() method */
     private void drawPixel(int x,int y){
         mGraphics.drawLine(x,y,x,y);
@@ -243,6 +322,7 @@ public class MyJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField JTextFieldLinesNumber;
+    private javax.swing.JButton btnShowFunction;
     private javax.swing.JButton btnShowPixels;
     private javax.swing.JButton btnShowSinus;
     private javax.swing.JButton jButtonShowImage;
