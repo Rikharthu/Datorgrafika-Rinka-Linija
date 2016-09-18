@@ -234,16 +234,21 @@ public class MyJFrame extends javax.swing.JFrame {
         float arg = 0;
         int x=0, y=0;
         
-        while(arg<jPanelCanvas.getWidth()){
-            arg+=.025;
-            x++;
-            mGraphics.setColor(Color.blue);
-            y=Math.round(offSetY-f(arg)*50);
-            drawPixel(x,y);
+        while(x<jPanelCanvas.getWidth()){
+            for(int i=0;i<100;i++){
+                // для большей точности, при одном Х определяем
+                arg+=.0002;
+                mGraphics.setColor(Color.blue);
+                y=Math.round(offSetY-f(arg)*50);
+                drawPixel(x,y);
             
-            mGraphics.setColor(Color.red);
-            y=offSetY-Math.round(r(arg)*50);
-            drawPixel(x,y);
+                mGraphics.setColor(Color.red);
+                y=offSetY-Math.round(r(arg)*50);
+                drawPixel(x,y);
+            }
+
+            x++;
+            
         }
         
         mGraphics.setColor(prevColor);
@@ -262,7 +267,7 @@ public class MyJFrame extends javax.swing.JFrame {
     private float r(float x){
         float result=3/2f;
         
-        for(int n=1;n<7;n++){
+        for(int n=1;n<10;n++){
             result+= 4/(Math.pow(2*n-1, 2)*Math.pow(Math.PI,2))*
                     Math.cos((2*n-1)*Math.PI*x/2)+
                     Math.pow(-1, n)*2/(n*Math.PI)*
